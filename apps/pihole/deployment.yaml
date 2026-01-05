@@ -29,14 +29,14 @@ spec:
               memory: 256Mi
           env:
             - name: TZ
-              value: "Europe/Rome"
+              value: Europe/Rome
             - name: FTLCONF_webserver_api_password
               valueFrom:
                 secretKeyRef:
                   name: pihole-secret
                   key: password
             - name: FTLCONF_dns_listeningMode
-              value: "all"
+              value: all
             - name: FTLCONF_dns_rateLimit_interval
               value: "60"
             - name: FTLCONF_dns_rateLimit_count

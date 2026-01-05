@@ -5,7 +5,7 @@ metadata:
   name: pihole-service
   namespace: pihole
   annotations:
-    metallb.universe.tf/allow-shared-ip: "pihole-svc"
+    metallb.universe.tf/allow-shared-ip: pihole-svc
 spec:
   externalTrafficPolicy: Local
   loadBalancerIP: 192.168.178.220

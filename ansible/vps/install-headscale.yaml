@@ -3,16 +3,16 @@
   hosts: vps
   become: true
   vars:
-    headscale_url: "{{ lookup('env', 'HEADSCALE_URL') }}"
-    headscale_base_domain: "{{ lookup('env', 'HEADSCALE_BASE_DOMAIN') }}"
-    tls_letsencrypt_hostname: "{{ lookup('env', 'TLS_LETSENCRYPT_HOSTNAME') }}"
-    headscale_deb_url: "https://github.com/juanfont/headscale/releases/download/v0.27.1/headscale_0.27.1_linux_amd64.deb"
-    config_src: "{{ playbook_dir }}/config.yaml"
-    config_dest: "/etc/headscale/config.yaml"
+    headscale_url: '{{ lookup(''env'', ''HEADSCALE_URL'') }}'
+    headscale_base_domain: '{{ lookup(''env'', ''HEADSCALE_BASE_DOMAIN'') }}'
+    tls_letsencrypt_hostname: '{{ lookup(''env'', ''TLS_LETSENCRYPT_HOSTNAME'') }}'
+    headscale_deb_url: https://github.com/juanfont/headscale/releases/download/v0.27.1/headscale_0.27.1_linux_amd64.deb
+    config_src: '{{ playbook_dir }}/config.yaml'
+    config_dest: /etc/headscale/config.yaml
   tasks:
     - name: Download Headscale .deb package
       get_url:
-        url: "{{ headscale_deb_url }}"
+        url: '{{ headscale_deb_url }}'
         dest: /tmp/headscale.deb
     - name: Install Headscale package
       apt:
@@ -25,8 +25,8 @@
         mode: "0755"
     - name: Copy Headscale config.yaml
       template:
-        src: "{{ config_src }}"
-        dest: "{{ config_dest }}"
+        src: '{{ config_src }}'
+        dest: '{{ config_dest }}'
         owner: root
         group: root
         mode: "0644"

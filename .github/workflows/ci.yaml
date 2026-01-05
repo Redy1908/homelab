@@ -10,11 +10,11 @@ on:
       - main
       - master
     paths:
-      - "ansible/**"
-      - "apps/**"
-      - "clusters/**"
-      - "talos/**"
-      - "utils/**"
+      - ansible/**
+      - apps/**
+      - clusters/**
+      - talos/**
+      - utils/**
 jobs:
   yamllint:
     name: YAML Syntax Check
@@ -25,7 +25,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6
         with:
-          python-version: "3.x"
+          python-version: 3.x
       - name: Install yamllint
         run: |
           pip install yamllint
@@ -43,8 +43,7 @@ jobs:
         uses: docker://ghcr.io/yannh/kubeconform:latest@sha256:85dbef6b4b312b99133decc9c6fc9495e9fc5f92293d4ff3b7e1b30f5611823c
         with:
           entrypoint: /kubeconform
-          args: >-
-            -summary -output json -ignore-missing-schemas -schema-location default -schema-location https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json -verbose apps/ clusters/ utils/
+          args: -summary -output json -ignore-missing-schemas -schema-location default -schema-location https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json -verbose apps/ clusters/ utils/
   sops-check:
     name: SOPS Encryption Check
     runs-on: ubuntu-latest

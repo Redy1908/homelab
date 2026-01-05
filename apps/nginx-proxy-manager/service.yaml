@@ -5,7 +5,7 @@ metadata:
   name: nginx-proxy-manager-service
   namespace: nginx-proxy-manager
   annotations:
-    metallb.universe.tf/allow-shared-ip: "nginx-proxy-manager-svc"
+    metallb.universe.tf/allow-shared-ip: nginx-proxy-manager-svc
 spec:
   loadBalancerIP: 192.168.178.221
   selector:

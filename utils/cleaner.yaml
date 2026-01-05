@@ -15,7 +15,9 @@ spec:
         limits:
           cpu: 100m
           memory: 64Mi
-      command: ["/bin/sh", "-c"]
+      command:
+        - /bin/sh
+        - -c
       args:
         - |
           rm -rf /mnt/dir

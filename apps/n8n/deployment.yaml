@@ -19,7 +19,10 @@ spec:
       initContainers:
         - name: volume-permissions
           image: busybox:stable-uclibc@sha256:8ef5e107fc665280ce7f327660f9bdaa7496905d1f1a2ded3c841e04e4375ebd
-          command: ["sh", "-c", "chown -R 1000:1000 /home/node/.n8n"]
+          command:
+            - sh
+            - -c
+            - chown -R 1000:1000 /home/node/.n8n
           volumeMounts:
             - name: n8n-data
               mountPath: /home/node/.n8n
@@ -40,9 +43,9 @@ spec:
               protocol: TCP
           env:
             - name: GENERIC_TIMEZONE
-              value: "Europe/Rome"
+              value: Europe/Rome
             - name: TZ
-              value: "Europe/Rome"
+              value: Europe/Rome
           volumeMounts:
             - name: n8n-data
               mountPath: /home/node/.n8n

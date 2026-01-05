@@ -1,9 +1,10 @@
 ---
 extends: default
 ignore: |
-  talos/config/*
+  talos/config/**
   talos/secrets/secret.yaml
   apps/secrets/*-secret.yaml
+  clusters/homelab/flux-system/**
 rules:
   line-length:
     max: 9999

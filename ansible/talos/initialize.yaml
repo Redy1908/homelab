@@ -4,12 +4,12 @@
   connection: local
   gather_facts: false
   vars:
-    github_repo: "{{ lookup('env', 'GITHUB_REPO') }}"
-    github_user: "{{ lookup('env', 'GITHUB_USER') }}"
-    github_token: "{{ lookup('env', 'GITHUB_TOKEN') }}"
-    cluster_name: "{{ lookup('env', 'CLUSTER_NAME') }}"
-    node_ip: "{{ lookup('env', 'NODE_IP') }}"
-    endpoint_ip: "{{ lookup('env', 'NODE_IP') }}"
+    github_repo: '{{ lookup(''env'', ''GITHUB_REPO'') }}'
+    github_user: '{{ lookup(''env'', ''GITHUB_USER'') }}'
+    github_token: '{{ lookup(''env'', ''GITHUB_TOKEN'') }}'
+    cluster_name: '{{ lookup(''env'', ''CLUSTER_NAME'') }}'
+    node_ip: '{{ lookup(''env'', ''NODE_IP'') }}'
+    endpoint_ip: '{{ lookup(''env'', ''NODE_IP'') }}'
     config_dir: ../talos/config
     secrets_dir: ../talos/secrets
     patch_file: ../talos/patches/patch.yaml
@@ -17,19 +17,19 @@
   tasks:
     - name: Ensure config directory exists
       file:
-        path: "{{ config_dir }}"
+        path: '{{ config_dir }}'
         state: directory
         mode: "0755"
     - name: Ensure secrets directory exists
       file:
-        path: "{{ secrets_dir }}"
+        path: '{{ secrets_dir }}'
         state: directory
         mode: "0755"
     - name: Generate Talos secrets if not present
       shell: |
         talosctl gen secrets -o {{ secrets_dir }}/secret.yaml
       args:
-        creates: "{{ secrets_dir }}/secret.yaml"
+        creates: '{{ secrets_dir }}/secret.yaml'
     - name: Generate Talos config files (with patch and secrets) if not present
       shell: |
         talosctl gen config {{ cluster_name }} https://{{ endpoint_ip }}:6443 \
@@ -38,22 +38,22 @@
           -o {{ config_dir }} \
           --force
       args:
-        creates: "{{ config_dir }}/controlplane.yaml"
+        creates: '{{ config_dir }}/controlplane.yaml'
     - name: Configure Talos endpoint and node
       shell: |
         talosctl --talosconfig {{ config_dir }}/talosconfig config endpoint {{ node_ip }}
         talosctl --talosconfig {{ config_dir }}/talosconfig config node {{ node_ip }}
     - name: Remove exclude-from-external-load-balancers label if present
       replace:
-        path: "{{ config_dir }}/controlplane.yaml"
-        regexp: '^\s*node.kubernetes.io/exclude-from-external-load-balancers:.*$'
+        path: '{{ config_dir }}/controlplane.yaml'
+        regexp: ^\s*node.kubernetes.io/exclude-from-external-load-balancers:.*$
         replace: ""
     - name: Apply Talos config (apply-config)
       shell: |
         talosctl --talosconfig {{ config_dir }}/talosconfig apply-config --insecure --nodes {{ node_ip }} --file {{ config_dir }}/controlplane.yaml
     - name: Wait for Talos API to be ready
       wait_for:
-        host: "{{ node_ip }}"
+        host: '{{ node_ip }}'
         port: 50000
         delay: 5
         timeout: 600
@@ -64,7 +64,7 @@
       shell: |
         talosctl --talosconfig {{ config_dir }}/talosconfig kubeconfig > {{ kubeconfig_path }}
       args:
-        creates: "{{ kubeconfig_path }}"
+        creates: '{{ kubeconfig_path }}'
     - name: Wait for Kubernetes API to be ready (kubectl)
       shell: |
         kubectl --kubeconfig {{ kubeconfig_path }} get nodes
@@ -93,4 +93,4 @@
           --path=./clusters/homelab \
           --personal
       environment:
-        GITHUB_TOKEN: "{{ github_token }}"
+        GITHUB_TOKEN: '{{ github_token }}'

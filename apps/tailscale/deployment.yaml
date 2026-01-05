@@ -31,9 +31,9 @@ spec:
               memory: 256Mi
           env:
             - name: TZ
-              value: "Europe/Rome"
+              value: Europe/Rome
             - name: TS_STATE_DIR
-              value: "/var/lib/tailscale"
+              value: /var/lib/tailscale
             - name: TS_USERSPACE
               value: "false"
             - name: TS_DEBUG_MTU_UDP
@@ -49,7 +49,9 @@ spec:
               add:
                 - NET_ADMIN
                 - NET_RAW
-          command: ["/bin/sh", "-c"]
+          command:
+            - /bin/sh
+            - -c
           args:
             - |
               set -e
