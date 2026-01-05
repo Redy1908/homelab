@@ -130,12 +130,15 @@ To install and configure Headscale on your VPS using Ansible:
 1. Export the required environment variables:
 
 ```bash
-export HEADSCALE_URL="https://headscale.example.com"
-export HEADSCALE_BASE_DOMAIN="example.com"
-export TLS_LETSENCRYPT_HOSTNAME="headscale.example.com"
-export VPS_HOST="your.vps.hostname.or.ip"
-export VPS_USER="your_ssh_user"
+export HEADSCALE_URL="HEADSCALE_URL"
+export HEADSCALE_BASE_DOMAIN="HEADSCALE_BASE_DOMAIN"
+export TLS_LETSENCRYPT_HOSTNAME="TLS_LETSENCRYPT_HOSTNAME"
+export VPS_HOST="VPS_HOST"
+export VPS_USER="VPS_USER"
+export VPS_SSH_KEY_PATH="VPS_SSH_KEY_PATH"
 ```
+
+> If yor ssh key requires a passphrase, ensure your ssh-agent is running and the key is added.
 
 2. Run the dedicated playbook using the provided inventory:
 
@@ -143,14 +146,7 @@ export VPS_USER="your_ssh_user"
 ansible-playbook ansible/vps/install-headscale.yaml -i ansible/inventory.ini
 ```
 
-- Il file `ansible/inventory.ini` usa le variabili d'ambiente VPS_HOST e VPS_USER per configurare dinamicamente l'host e l'utente SSH:
-
-```ini
-[vps]
-vps1 ansible_host={{ lookup('env', 'VPS_HOST') }} ansible_user={{ lookup('env', 'VPS_USER') }}
-```
-
 - The playbook will:
   - Download and install Headscale
-  - Render the config file from `ansible/vps/config.yaml.j2` using the exported variables
+  - Render the config file from `ansible/vps/config.yaml` using the exported variables
   - Enable and start the Headscale service

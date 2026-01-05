@@ -43,3 +43,8 @@
     - name: Show Headscale service status
       debug:
         var: headscale_status
+  handlers:
+    - name: Restart Headscale
+      systemd:
+        name: headscale
+        state: restarted
