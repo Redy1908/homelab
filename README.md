@@ -33,6 +33,8 @@ This project is configured with a **Dev Container**. To ensure consistency, all 
 
 This project uses an external VPS to host **Headscale** (a self-hosted Tailscale control server). The setup includes Nginx as a reverse proxy with WebSocket support, Fail2Ban for SSH protection, and automatic SSL certificates via Let's Encrypt.
 
+![Network Diagram](imgs/network.png)
+
 ### Prerequisites
 
 1.  A fresh VPS (Ubuntu/Debian recommended).
