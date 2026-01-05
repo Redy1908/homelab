@@ -1,10 +1,10 @@
 # Homelab Setup
 
-My personal homelab built on **Talos Linux** and powered by **Kubernetes**. The infrastructure is fully automated using **Ansible** and managed via GitOps with **FluxCD**.
+My personal homelab built on **Talos Linux** and powered by **Kubernetes**. The infrastructure features a self-hosted mesh VPN (Headscale/Tailscale). Fully automated using **Ansible**, and managed via GitOps with **FluxCD**.
 
 ---
 
-## 🚀 Deployed Services
+## Deployed Services
 
 - **Homepage**: Personal dashboard and landing page.
 - **Pi-hole**: Network-wide ad blocking and DNS server.
@@ -17,7 +17,7 @@ My personal homelab built on **Talos Linux** and powered by **Kubernetes**. The 
 
 ---
 
-## 🛠️ Development Environment
+## Development Environment
 
 This project is configured with a **Dev Container**. To ensure consistency, all necessary tools are pre-installed and configured within the container:
 * `kubectl`
@@ -118,6 +118,8 @@ sops -e -i apps/tailscale/secret.yaml
 # Note: talos/secrets/secret.yaml does not exist yet, so we don't encrypt it here.
 ```
 
+---
+
 ## Provisioning
 
 Export the necessary environment variables:
@@ -146,19 +148,21 @@ FluxCD will now automatically deploy the applications defined in clusters/homela
 
 > **Note**: This is a single-node configuration. Ensure you edit `talos/patches/patch.yaml` to set the correct installation disk for your hardware.
 
+---
+
 ## Maintenance & Operations
 
-## Patch Cluster Configuration
+### Patch Cluster Configuration
 
 This workflow decrypts the config, applies patches using Ansible, and re-encrypts the secrets.
 
-### 1. Decrypt Talos Secret
+#### 1. Decrypt Talos Secret
 
 ```bash
 sops -d -i talos/secrets/secret.yaml
 ```
 
-### 2. Apply Patch
+#### 2. Apply Patch
 
 * Exports current cluster config to `talos/config`.
 
@@ -170,23 +174,23 @@ sops -d -i talos/secrets/secret.yaml
 ansible-playbook -i ansible/inventory.yaml ansible/cluster/patch-cluster.yaml
 ```
 
-### 3. Encrypt Talos Secret
+#### 3. Encrypt Talos Secret
 
 ```bash
 sops -e -i talos/secrets/secret.yaml
 ```
 
-## Recover Cluster Configuration
+### Recover Cluster Configuration
 
 Use this to regenerate the `kubeconfig` and `talosconfig` locally from the running cluster.
 
-### 1. Decrypt Talos Secret
+#### 1. Decrypt Talos Secret
 
 ```bash
 sops -d -i talos/secrets/secret.yaml
 ```
 
-### 2. Recover:
+#### 2. Recover:
 
 * Exports current cluster config including `kubeconfig` to `talos/config`.
 
@@ -194,7 +198,7 @@ sops -d -i talos/secrets/secret.yaml
 ansible-playbook -i ansible/inventory.yaml ansible/cluster/recover-cluster.yaml
 ```
 
-### 3. Encrypt Talos Secret
+#### 3. Encrypt Talos Secret
 
 ```bash
 sops -e -i talos/secrets/secret.yaml
