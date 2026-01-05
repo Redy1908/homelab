@@ -1,0 +1,33 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pihole-copier
+  namespace: kube-system
+spec:
+  containers:
+    - name: copier
+      image: alpine:3.19
+      resources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          cpu: 100m
+          memory: 64Mi
+      command: ["/bin/sh", "-c"]
+      args:
+        - |
+          cp -a /mnt/dir /mnt/dir
+          echo "Done."
+      volumeMounts:
+        - name: host-data
+          mountPath: /mnt
+      securityContext:
+        privileged: true
+  volumes:
+    - name: host-data
+      hostPath:
+        path: /var/mnt/data
+  nodeName: homelab
+  restartPolicy: Never

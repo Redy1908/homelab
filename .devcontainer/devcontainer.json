@@ -1,0 +1,28 @@
+{
+  "name": "Homelab Kubernetes Ops",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "features": {
+    "ghcr.io/devcontainers-extra/features/ansible:2": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-kubernetes-tools.vscode-kubernetes-tools",
+        "redhat.vscode-yaml",
+        "signageos.signageos-vscode-sops"
+      ]
+    }
+  },
+  "remoteUser": "Redy1908",
+  "containerEnv": {
+    "TALOSCONFIG": "/workspaces/homelab/talos/config/talosconfig",
+    "KUBECONFIG": "/workspaces/homelab/talos/config/kubeconfig",
+    "SOPS_AGE_KEY_FILE": "/workspaces/homelab/key.txt"
+  },
+  "mounts": [
+    "source=${localEnv:HOME}/.ssh,target=/home/Redy1908/.ssh,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.kube,target=/home/Redy1908/.kube,type=bind,consistency=cached"
+  ]
+}

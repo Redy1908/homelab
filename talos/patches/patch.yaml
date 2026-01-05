@@ -1,0 +1,16 @@
+---
+cluster:
+  allowSchedulingOnControlPlanes: true
+machine:
+  install:
+    disk: /dev/mmcblk0
+    wipe: true
+  disks:
+    - device: /dev/sda
+      partitions:
+        - mountpoint: /var/mnt/data
+---
+apiVersion: v1alpha1
+kind: HostnameConfig
+auto: off
+hostname: homelab

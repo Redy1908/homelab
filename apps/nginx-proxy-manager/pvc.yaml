@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: npm-pvc
+  namespace: nginx-proxy-manager
+spec:
+  storageClassName: manual
+  volumeName: npm-pv
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi

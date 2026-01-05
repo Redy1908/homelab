@@ -1,0 +1,23 @@
+---
+- name: Regenerate and apply new Talos config with patch
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    cluster_name: "{{ lookup('env', 'CLUSTER_NAME') }}"
+    endpoint_ip: "{{ lookup('env', 'NODE_IP') }}"
+    node_ip: "{{ lookup('env', 'NODE_IP') }}"
+    secrets_file: "../talos/secrets/secret.yaml"
+    patch_file: "../talos/patches/patch.yaml"
+    config_dir: "../talos/config"
+  tasks:
+    - name: Generate new Talos config with updated patch
+      shell: |
+        talosctl gen config {{ cluster_name }} https://{{ endpoint_ip }}:6443 \
+          --with-secrets {{ secrets_file }} \
+          --config-patch @{{ patch_file }} \
+          -o {{ config_dir }} \
+          --force
+    - name: Apply new Talos config
+      shell: |
+        talosctl --talosconfig {{ config_dir }}/talosconfig apply-config --file {{ config_dir }}/controlplane.yaml

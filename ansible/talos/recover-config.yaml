@@ -1,0 +1,28 @@
+---
+- name: Recover talosconfig and kubeconfig from existing secrets
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    cluster_name: "{{ lookup('env', 'CLUSTER_NAME') }}"
+    endpoint_ip: "{{ lookup('env', 'NODE_IP') }}"
+    node_ip: "{{ lookup('env', 'NODE_IP') }}"
+    secrets_file: "../talos/secrets/secret.yaml"
+    patch_file: "../talos/patches/patch.yaml"
+    config_dir: "../talos/config"
+    kubeconfig_path: "../talos/config/kubeconfig"
+  tasks:
+    - name: Regenerate talosconfig and controlplane.yaml
+      shell: |
+        talosctl gen config {{ cluster_name }} https://{{ endpoint_ip }}:6443 \
+          --with-secrets {{ secrets_file }} \
+          --config-patch @{{ patch_file }} \
+          -o {{ config_dir }} \
+          --force
+    - name: Configure Talos endpoint and node
+      shell: |
+        talosctl --talosconfig {{ config_dir }}/talosconfig config endpoint {{ node_ip }}
+        talosctl --talosconfig {{ config_dir }}/talosconfig config node {{ node_ip }}
+    - name: Get kubeconfig
+      shell: |
+        talosctl --talosconfig {{ config_dir }}/talosconfig kubeconfig > {{ kubeconfig_path }}

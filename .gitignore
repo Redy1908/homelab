@@ -1,0 +1,6 @@
+key.txt
+
+talos/config/*
+!talos/config/.gitkeep
+
+*.decrypted~*

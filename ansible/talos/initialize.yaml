@@ -1,0 +1,96 @@
+---
+- name: Talos cluster setup from scratch (dev container)
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    github_repo: "{{ lookup('env', 'GITHUB_REPO') }}"
+    github_user: "{{ lookup('env', 'GITHUB_USER') }}"
+    github_token: "{{ lookup('env', 'GITHUB_TOKEN') }}"
+    cluster_name: "{{ lookup('env', 'CLUSTER_NAME') }}"
+    node_ip: "{{ lookup('env', 'NODE_IP') }}"
+    endpoint_ip: "{{ lookup('env', 'NODE_IP') }}"
+    config_dir: ../talos/config
+    secrets_dir: ../talos/secrets
+    patch_file: ../talos/patches/patch.yaml
+    kubeconfig_path: ../talos/config/kubeconfig
+  tasks:
+    - name: Ensure config directory exists
+      file:
+        path: "{{ config_dir }}"
+        state: directory
+        mode: "0755"
+    - name: Ensure secrets directory exists
+      file:
+        path: "{{ secrets_dir }}"
+        state: directory
+        mode: "0755"
+    - name: Generate Talos secrets if not present
+      shell: |
+        talosctl gen secrets -o {{ secrets_dir }}/secret.yaml
+      args:
+        creates: "{{ secrets_dir }}/secret.yaml"
+    - name: Generate Talos config files (with patch and secrets) if not present
+      shell: |
+        talosctl gen config {{ cluster_name }} https://{{ endpoint_ip }}:6443 \
+          --with-secrets {{ secrets_dir }}/secret.yaml \
+          --config-patch @{{ patch_file }} \
+          -o {{ config_dir }} \
+          --force
+      args:
+        creates: "{{ config_dir }}/controlplane.yaml"
+    - name: Configure Talos endpoint and node
+      shell: |
+        talosctl --talosconfig {{ config_dir }}/talosconfig config endpoint {{ node_ip }}
+        talosctl --talosconfig {{ config_dir }}/talosconfig config node {{ node_ip }}
+    - name: Remove exclude-from-external-load-balancers label if present
+      replace:
+        path: "{{ config_dir }}/controlplane.yaml"
+        regexp: '^\s*node.kubernetes.io/exclude-from-external-load-balancers:.*$'
+        replace: ""
+    - name: Apply Talos config (apply-config)
+      shell: |
+        talosctl --talosconfig {{ config_dir }}/talosconfig apply-config --insecure --nodes {{ node_ip }} --file {{ config_dir }}/controlplane.yaml
+    - name: Wait for Talos API to be ready
+      wait_for:
+        host: "{{ node_ip }}"
+        port: 50000
+        delay: 5
+        timeout: 600
+    - name: Bootstrap Talos cluster
+      shell: |
+        talosctl --talosconfig {{ config_dir }}/talosconfig bootstrap
+    - name: Get kubeconfig
+      shell: |
+        talosctl --talosconfig {{ config_dir }}/talosconfig kubeconfig > {{ kubeconfig_path }}
+      args:
+        creates: "{{ kubeconfig_path }}"
+    - name: Wait for Kubernetes API to be ready (kubectl)
+      shell: |
+        kubectl --kubeconfig {{ kubeconfig_path }} get nodes
+      register: k8s_health
+      retries: 60
+      delay: 10
+      until: k8s_health.rc == 0
+    - name: Ensure flux-system namespace exists
+      shell: |
+        kubectl --kubeconfig {{ kubeconfig_path }} create namespace flux-system --dry-run=client -o yaml | kubectl --kubeconfig {{ kubeconfig_path }} apply -f -
+    - name: Create SOPS age secret for Flux
+      shell: |
+        kubectl --kubeconfig {{ kubeconfig_path }} -n flux-system create secret generic sops-age --from-file=age.agekey=../key.txt --dry-run=client -o yaml | kubectl --kubeconfig {{ kubeconfig_path }} apply -f -
+      args:
+        creates: /tmp/sops-age-secret.created
+      register: sops_secret
+    - name: Apply official MetalLB manifest
+      shell: |
+        kubectl --kubeconfig {{ kubeconfig_path }} apply -f https://raw.githubusercontent.com/metallb/metallb/v0.15.3/config/manifests/metallb-native.yaml
+    - name: Bootstrap FluxCD
+      shell: |
+        flux --kubeconfig {{ kubeconfig_path }} bootstrap github \
+          --owner={{ github_user }} \
+          --repository={{ github_repo }} \
+          --branch=main \
+          --path=./clusters/homelab \
+          --personal
+      environment:
+        GITHUB_TOKEN: "{{ github_token }}"
