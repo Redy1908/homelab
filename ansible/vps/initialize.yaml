@@ -1,0 +1,105 @@
+---
+- hosts: headscale_servers
+  become: yes
+  vars:
+    domain_name: "{{ lookup('env', 'DOMAIN_NAME') }}"
+    ssh_port: "{{ lookup('env', 'SSH_PORT') | default('22') }}"
+
+  tasks:
+    - name: Install Nginx, Certbot and Fail2Ban
+      apt:
+        name:
+          - nginx
+          - certbot
+          - python3-certbot-nginx
+          - fail2ban
+        state: present
+        update_cache: yes
+
+    - name: Deploy Fail2Ban configuration
+      template:
+        src: "{{ playbook_dir }}/fail2ban/jail.local"
+        dest: /etc/fail2ban/jail.local
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Restart Fail2Ban to apply config
+      systemd:
+        name: fail2ban
+        state: restarted
+        enabled: yes
+
+    - name: Configure Headscale URLs and Ports
+      lineinfile:
+        path: /etc/headscale/config.yaml
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+      loop:
+        - { regexp: '^server_url:', line: 'server_url: https://{{ domain_name }}' }
+        - { regexp: '^listen_addr:', line: 'listen_addr: 127.0.0.1:8080' }
+        - { regexp: '^metrics_listen_addr:', line: 'metrics_listen_addr: 127.0.0.1:9090' }
+        - { regexp: '^grpc_listen_addr:', line: 'grpc_listen_addr: 127.0.0.1:50443' }
+
+    - name: Disable native Headscale TLS configuration
+      replace:
+        path: /etc/headscale/config.yaml
+        regexp: '^(tls_.*)'
+        replace: '# \1'
+
+    - name: Restart Headscale immediately
+      systemd:
+        name: headscale
+        state: restarted
+
+    - name: Copy WebSocket support config (Static File)
+      copy:
+        src: "{{ playbook_dir }}/nginx/websocket_support.conf"
+        dest: /etc/nginx/conf.d/websocket_support.conf
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Deploy Headscale Nginx Configuration from Template
+      template: 
+        src: "{{ playbook_dir }}/nginx/headscale.conf" 
+        dest: /etc/nginx/sites-available/headscale
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Enable Headscale site
+      file:
+        src: /etc/nginx/sites-available/headscale
+        dest: /etc/nginx/sites-enabled/headscale
+        state: link
+
+    - name: Remove default Nginx site
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+
+    - name: Verify Nginx config
+      command: nginx -t
+      changed_when: false
+
+    - name: Restart Nginx immediately
+      systemd:
+        name: nginx
+        state: restarted
+
+    - name: Obtain SSL certificate (No Email)
+      command: >
+        certbot --nginx 
+        -d {{ domain_name }} 
+        --non-interactive 
+        --agree-tos 
+        --register-unsafely-without-email
+        --redirect
+      args:
+        creates: /etc/letsencrypt/live/{{ domain_name }}/fullchain.pem
+
+    - name: Final Nginx Reload
+      systemd:
+        name: nginx
+        state: reloaded

@@ -1,32 +1,76 @@
-## Homelab Setup
+# Homelab Setup
 
-My personal homelab on **Talos Linux** powered by **Kubernetes**. Fully automated with **Ansible** and managed with GitOps (**FluxCD**).
+My personal homelab built on **Talos Linux** and powered by **Kubernetes**. The infrastructure is fully automated using **Ansible** and managed via GitOps with **FluxCD**.
 
-## Deployed Services
+---
 
-- **Homepage**: Personal homepage and dashboard.
+## 🚀 Deployed Services
+
+- **Homepage**: Personal dashboard and landing page.
 - **Pi-hole**: Network-wide ad blocking and DNS server.
 - **Nginx Proxy Manager**: Reverse proxy for exposing services.
 - **Actual Budget**: Personal finance management.
-- **Tailscale**: Secure remote access to the cluster.
-- **MetalLB**: Bare metal load balancer.
+- **Tailscale**: Secure remote access to the cluster (Mesh VPN).
+- **MetalLB**: Bare metal load balancer implementation.
 - **n8n**: Workflow automation tool.
-- **Cloudflared**: Cloudflare Tunnel for secure access.
+- **Cloudflared**: Cloudflare Tunnel for secure external access.
 
-## Development Environment
+---
 
-This project is configured with a **Dev Container**. All tools (`kubectl`, `talosctl`, `flux`, `ansible`, `sops`, `age`) are pre-installed and configured.
+## 🛠️ Development Environment
 
-## Cluster Setup
+This project is configured with a **Dev Container**. To ensure consistency, all necessary tools are pre-installed and configured within the container:
+* `kubectl`
+* `talosctl`
+* `flux`
+* `ansible`
+* `sops`
+* `age`
 
-Delete the existing encrypted secrets:
+---
+
+## 1. VPS Setup (Headscale)
+
+This project uses an external VPS to host **Headscale** (a self-hosted Tailscale control server). The setup includes Nginx as a reverse proxy with WebSocket support, Fail2Ban for SSH protection, and automatic SSL certificates via Let's Encrypt.
+
+### Prerequisites
+
+1.  A fresh VPS (Ubuntu/Debian recommended).
+2.  A DNS A Record pointing to your VPS IP (e.g., `headscale.yourdomain.com`).
+3.  SSH access to the VPS.
+
+### Configuration & Deployment
+
+Export the required environment variables:
 
 ```bash
-rm -f talos/secrets/secret.yaml
-rm -f apps/pi-hole/secret.yaml
+export VPS_HOST="VPS_IP_OR_HOSTNAME"
+export VPS_USER="VPS_SSH_USERNAME"
+export DOMAIN_NAME="headscale.yourdomain.com"
+export SSH_PORT="22"
 ```
 
-Create the secret for Pi-hole `apps/pi-hole/secret.yaml`:
+Run the Ansible playbook to provision the VPS:
+
+```bash
+ansible-playbook -i ansible/inventory.yaml ansible/vps/setup-headscale.yaml
+```
+
+## 2. Cluster Setup
+
+### Secrets Management
+
+#### 1. Clean up existing secrets:
+
+```bash
+rm -f talos/secrets/secret.yaml \
+      apps/pi-hole/secret.yaml \
+      apps/tailscale/secret.yaml
+```
+
+#### 2. Generate new secrets:
+
+Create apps/pi-hole/secret.yaml:
 
 ```yaml
 apiVersion: v1
@@ -38,7 +82,22 @@ stringData:
     password: YOUR_PIHOLE_PASSWORD
 ```
 
-> Ansible will create the Talos secret `talos/secrets/secret.yaml` during the playbook execution.
+Create apps/tailscale/secret.yaml:
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+    name: tailscale-authkey
+    namespace: tailscale
+type: Opaque
+stringData:
+    TS_AUTHKEY: YOUR_TAILSCALE_AUTHKEY # Generate this via your Headscale CLI
+```
+
+> **Note**: The main Talos secret (`talos/secrets/secret.yaml`) will be generated automatically by Ansible playbook during the playbook execution.
+
+### Encryption (SOPS)
 
 Generate an `age` key pair for SOPS encryption:
 
@@ -47,15 +106,19 @@ age-keygen -o key.txt
 export SOPS_AGE_KEY_FILE=key.txt
 ```
 
-Edit the file `.sops.yaml` to add your age public key under the `age` section.
+> **Important**: Edit .sops.yaml to add your new age public key under the age section.
 
-Encrypt the pihole secret
+Encrypt the application secrets:
 
 ```bash
 sops -e -i apps/pi-hole/secret.yaml
+sops -e -i apps/tailscale/secret.yaml
+# Note: talos/secrets/secret.yaml does not exist yet, so we don't encrypt it here.
 ```
 
-Export the necessary environment variables used by the Ansible playbook:
+## Provisioning
+
+Export the necessary environment variables:
 
 ```bash
 export GITHUB_USER="GITHUB_USERNAME"
@@ -65,88 +128,72 @@ export CLUSTER_NAME="homelab"
 export NODE_IP="NODE_IP"
 ```
 
-Run the ansible playbook to set up the cluster.
+Run the playbook to initialize the cluster:
 
 ```bash
-ansible-playbook ansible/talos/initialize.yaml
+ansible-playbook -i ansible/inventory.yaml ansible/cluster/setup-cluster.yaml
 ```
 
-Encrypt the Talos secret
+Finalize Security: Once the playbook finishes, encrypt the newly generated Talos secret:
 
 ```bash
 sops -e -i talos/secrets/secret.yaml
 ```
 
-FluxCD will automatically deploy the applications defined in the `clusters/homelab/apps` directory.
+FluxCD will now automatically deploy the applications defined in clusters/homelab/apps.
 
-> **Note**: This is a single node configuration. In case make sure to edit the file `talos/patches/patch.yaml` to set the correct installation disk.
+> **Note**: This is a single-node configuration. Ensure you edit `talos/patches/patch.yaml` to set the correct installation disk for your hardware.
 
-## Patch The Cluster Configuration (Optional)
+## Maintenance & Operations
 
-Decript the Talos secret
+## Patch Cluster Configuration
+
+This workflow decrypts the config, applies patches using Ansible, and re-encrypts the secrets.
+
+### 1. Decrypt Talos Secret
 
 ```bash
 sops -d -i talos/secrets/secret.yaml
 ```
 
-Use the dedicated Ansible playbook to patch the cluster configuration.
+### 2. Apply Patch
+
+* Exports current cluster config to `talos/config`.
+
+* Applies patches from `talos/patches/patch.yaml`.
+
+* Applies changes to the node.
 
 ```bash
-ansible-playbook ansible/talos/patch.yaml
+ansible-playbook -i ansible/inventory.yaml ansible/cluster/patch-cluster.yaml
 ```
-> Will export the current Cluster config using also the file `talos/patches/patch.yaml` in `talos/config` and will apply it to the cluster.
 
-Encrypt the Talos secret
+### 3. Encrypt Talos Secret
 
 ```bash
 sops -e -i talos/secrets/secret.yaml
 ```
 
-## Recover the Cluster configuration (Optional)
+## Recover Cluster Configuration
 
-Decript the Talos secret
+Use this to regenerate the `kubeconfig` and `talosconfig` locally from the running cluster.
+
+### 1. Decrypt Talos Secret
 
 ```bash
 sops -d -i talos/secrets/secret.yaml
 ```
 
-Use the dedicated Ansible playbook to recover the cluster configuration.
+### 2. Recover:
+
+* Exports current cluster config including `kubeconfig` to `talos/config`.
 
 ```bash
-ansible-playbook ansible/talos/recover.yaml
+ansible-playbook -i ansible/inventory.yaml ansible/cluster/recover-cluster.yaml
 ```
-> Will export the current Cluster config including kubeconfig in `talos/config`.
 
-Encrypt the Talos secret
+### 3. Encrypt Talos Secret
 
 ```bash
 sops -e -i talos/secrets/secret.yaml
 ```
-
-## VPS Setup with Ansible (Headscale)
-
-To install and configure Headscale on your VPS using Ansible:
-
-1. Export the required environment variables:
-
-```bash
-export HEADSCALE_URL="HEADSCALE_URL"
-export HEADSCALE_BASE_DOMAIN="HEADSCALE_BASE_DOMAIN"
-export TLS_LETSENCRYPT_HOSTNAME="TLS_LETSENCRYPT_HOSTNAME"
-export VPS_HOST="VPS_HOST"
-export VPS_USER="VPS_USER"
-export VPS_SSH_KEY_PATH="VPS_SSH_KEY_PATH"
-```
-
-> If yor ssh key requires a passphrase, ensure your ssh-agent is running and the key is added.
-
-2. Run the dedicated playbook using the provided inventory:
-
-```bash
-ansible-playbook ansible/vps/install-headscale.yaml -i ansible/inventory.ini
-```
-
-- The playbook will:
-  - Download and install Headscale
-  - Render the config file from `ansible/vps/config.yaml` using the exported variables
-  - Enable and start the Headscale service
