@@ -4,12 +4,12 @@
   connection: local
   gather_facts: false
   vars:
-    cluster_name: '{{ lookup(''env'', ''CLUSTER_NAME'') }}'
-    endpoint_ip: '{{ lookup(''env'', ''NODE_IP'') }}'
-    node_ip: '{{ lookup(''env'', ''NODE_IP'') }}'
-    secrets_file: ../talos/secrets/secret.yaml
-    patch_file: ../talos/patches/patch.yaml
-    config_dir: ../talos/config
+    cluster_name: "{{ lookup('env', 'CLUSTER_NAME') }}"
+    endpoint_ip: "{{ lookup('env', 'NODE_IP') }}"
+    node_ip: "{{ lookup('env', 'NODE_IP') }}"
+    secrets_file: ../../talos/secrets/secret.yaml
+    patch_file: ../../talos/patches/patch.yaml
+    config_dir: ../../talos/config
   tasks:
     - name: Generate new Talos config with updated patch
       shell: |

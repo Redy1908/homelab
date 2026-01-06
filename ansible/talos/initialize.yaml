@@ -4,16 +4,16 @@
   connection: local
   gather_facts: false
   vars:
-    github_repo: '{{ lookup(''env'', ''GITHUB_REPO'') }}'
-    github_user: '{{ lookup(''env'', ''GITHUB_USER'') }}'
-    github_token: '{{ lookup(''env'', ''GITHUB_TOKEN'') }}'
-    cluster_name: '{{ lookup(''env'', ''CLUSTER_NAME'') }}'
-    node_ip: '{{ lookup(''env'', ''NODE_IP'') }}'
-    endpoint_ip: '{{ lookup(''env'', ''NODE_IP'') }}'
-    config_dir: ../talos/config
-    secrets_dir: ../talos/secrets
-    patch_file: ../talos/patches/patch.yaml
-    kubeconfig_path: ../talos/config/kubeconfig
+    github_repo: "{{ lookup('env', 'GITHUB_REPO') }}"
+    github_user: "{{ lookup('env', 'GITHUB_USER') }}"
+    github_token: "{{ lookup('env', 'GITHUB_TOKEN') }}"
+    cluster_name: "{{ lookup('env', 'CLUSTER_NAME') }}"
+    node_ip: "{{ lookup('env', ''NODE_IP') }}"
+    endpoint_ip: "{{ lookup('env', 'NODE_IP') }}"
+    config_dir: ../../talos/config
+    secrets_dir: ../../talos/secrets
+    patch_file: ../../talos/patches/patch.yaml
+    kubeconfig_path: ../../talos/config/kubeconfig
   tasks:
     - name: Ensure config directory exists
       file:
