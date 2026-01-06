@@ -11,5 +11,5 @@ spec:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   hostPath:
-    path: var/mnt/data/redis
+    path: /var/mnt/data/redis
   storageClassName: manual
