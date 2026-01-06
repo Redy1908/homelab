@@ -4,13 +4,13 @@
   connection: local
   gather_facts: false
   vars:
-    cluster_name: '{{ lookup(''env'', ''CLUSTER_NAME'') }}'
-    endpoint_ip: '{{ lookup(''env'', ''NODE_IP'') }}'
-    node_ip: '{{ lookup(''env'', ''NODE_IP'') }}'
-    secrets_file: ../talos/secrets/secret.yaml
-    patch_file: ../talos/patches/patch.yaml
-    config_dir: ../talos/config
-    kubeconfig_path: ../talos/config/kubeconfig
+    cluster_name: "{{ lookup('env', 'CLUSTER_NAME') }}"
+    endpoint_ip: "{{ lookup('env', 'NODE_IP') }}"
+    node_ip: "{{ lookup('env', 'NODE_IP') }}"
+    secrets_file: ../../talos/secrets/secret.yaml
+    patch_file: ../../talos/patches/patch.yaml
+    config_dir: ../../talos/config
+    kubeconfig_path: ../../talos/config/kubeconfig
   tasks:
     - name: Regenerate talosconfig and controlplane.yaml
       shell: |
