@@ -24,11 +24,14 @@ My personal homelab built on **Talos Linux** and powered by **Kubernetes**. The 
 
 This project is configured with a **Dev Container**. To ensure consistency, all necessary tools are pre-installed and configured within the container:
 * `kubectl`
+* `kubeconform`
 * `talosctl`
 * `flux`
 * `ansible`
 * `sops`
 * `age`
+* `helm`
+* `yq`
 
 ---
 
