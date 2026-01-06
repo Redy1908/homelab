@@ -14,6 +14,9 @@ My personal homelab built on **Talos Linux** and powered by **Kubernetes**. The 
 - **MetalLB**: Bare metal load balancer implementation.
 - **n8n**: Workflow automation tool.
 - **Cloudflared**: Cloudflare Tunnel for secure external access.
+- **Immich**: Self-hosted photo and video backup solution.
+- **PostgreSQL**: Database service for applications.
+- **Redis**: In-memory data structure store for caching.
 
 ---
 
@@ -113,7 +116,7 @@ export SOPS_AGE_KEY_FILE=key.txt
 Encrypt the application secrets:
 
 ```bash
-sops -e -i apps/pi-hole/secret.yaml
+sops -e -i apps/pihole/secret.yaml
 sops -e -i apps/tailscale/secret.yaml
 # Note: talos/secrets/secret.yaml does not exist yet, so we don't encrypt it here.
 ```
