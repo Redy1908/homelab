@@ -3,7 +3,7 @@ extends: default
 ignore: |
   talos/config/**
   talos/secrets/secret.yaml
-  apps/secrets/*-secret.yaml
+  apps/*/secret.yaml
   clusters/homelab/flux-system/**
 rules:
   line-length:
