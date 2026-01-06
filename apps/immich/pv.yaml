@@ -11,4 +11,4 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   hostPath:
     path: /mnt/data/immich
-  storageClassName: local-path
+  storageClassName: manual
