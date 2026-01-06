@@ -38,6 +38,10 @@ RUN curl -LO https://github.com/FiloSottile/age/releases/download/v1.3.1/age-v1.
     && mv age/age-keygen /usr/local/bin/age-keygen \
     && rm -rf age age-v1.3.1-linux-amd64.tar.gz
 
+# Install kubeconform
+RUN curl -L https://github.com/yannh/kubeconform/releases/download/v0.7.0/kubeconform-linux-amd64.tar.gz \
+    | tar xz -C /usr/local/bin kubeconform
+
 # Install helm
 RUN curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
