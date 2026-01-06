@@ -17,9 +17,12 @@ spec:
       containers:
         - name: redis
           image: redis:8.4
-          envFrom:
-            - secretRef:
-                name: redis-secret
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secret
+                  key: REDIS_PASSWORD
           command: ["redis-server", "--requirepass", "$(REDIS_PASSWORD)"]
           resources:
             requests:
