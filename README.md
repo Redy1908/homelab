@@ -55,6 +55,7 @@ Export the required environment variables:
 export VPS_HOST="VPS_IP_OR_HOSTNAME"
 export VPS_USER="VPS_SSH_USERNAME"
 export DOMAIN_NAME="headscale.yourdomain.com"
+export VPS_SSH_KEY_PATH="/path/to/your/ssh/key"
 export SSH_PORT="22"
 ```
 
