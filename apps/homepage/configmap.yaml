@@ -27,7 +27,7 @@ data:
             icon: fritzbox.png
             href: http://fritzbox.redy1908homelab.com/
             description: Router Management
-    - Monitoring
+    - Monitoring:
         - Grafana:
             icon: grafana.png
             href: https://grafana.redy1908homelab.com/
