@@ -59,6 +59,11 @@ spec:
         datasources:
           enabled: true
           defaultDatasourceEnabled: true
+        dashboards:
+          enabled: true
+          label: grafana_dashboard
+          labelValue: "1"
+          searchNamespace: ALL
       additionalDataSources:
         - name: Prometheus
           type: prometheus
