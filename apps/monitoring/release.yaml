@@ -1,0 +1,66 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: kube-prometheus-stack
+  namespace: monitoring
+spec:
+  interval: 1h0m0s
+  chart:
+    spec:
+      chart: kube-prometheus-stack
+      version: "80.10.0"
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community
+        namespace: flux-system
+      interval: 1h0m0s
+  
+  targetNamespace: monitoring
+  
+  install:
+    createNamespace: false
+  
+  values:
+    kubelet:
+      enabled: true
+      serviceMonitor:
+        https: true
+        insecureSkipVerify: true
+
+    prometheus-node-exporter:
+      hostNetwork: true
+      podSecurityPolicy:
+        enabled: false
+
+    kubeEtcd:
+      enabled: false
+    kubeControllerManager:
+      enabled: false
+    kubeScheduler:
+      enabled: false
+
+    grafana:
+      admin:
+        existingSecret: grafana-admin-credentials
+        userKey: admin-user
+        passwordKey: admin-password
+      persistence:
+        enabled: true
+        size: 5Gi
+        storageClassName: "local-path"
+      service:
+        type: LoadBalancer
+        loadBalancerIP: "192.168.178.225"
+        port: 80
+
+    prometheus:
+      prometheusSpec:
+        retention: 10d
+        storageSpec:
+          volumeClaimTemplate:
+            spec:
+              accessModes: ["ReadWriteOnce"]
+              resources:
+                requests:
+                  storage: 10Gi
