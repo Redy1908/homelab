@@ -41,6 +41,9 @@ spec:
       enabled: false
 
     grafana:
+      rbac:
+        create: true      
+      defaultDashboardsEnabled: true
       admin:
         existingSecret: grafana-admin-credentials
         userKey: admin-user
