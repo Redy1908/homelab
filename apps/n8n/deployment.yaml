@@ -18,7 +18,7 @@ spec:
     spec:
       initContainers:
         - name: volume-permissions
-          image: busybox:stable-uclibc@sha256:f43efcee63a305e152430da27badf8c517c8c4cff7f7588960060395da5f1647
+          image: busybox:stable-uclibc@sha256:aac791e71b167bcceee8a30edd8554d009aefe297b48fa50a967f6f6c2777fac
           command:
             - sh
             - -c
