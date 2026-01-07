@@ -49,6 +49,8 @@ spec:
         enabled: true
         type: pvc
         existingClaim: grafana-pvc
+      initChownData:
+        enabled: false
       service:
         type: LoadBalancer
         loadBalancerIP: "192.168.178.226"

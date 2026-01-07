@@ -13,6 +13,7 @@ spec:
   storageClassName: manual
   hostPath:
     path: /var/mnt/data/grafana
+    type: DirectoryOrCreate
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -28,3 +29,4 @@ spec:
   storageClassName: manual
   hostPath:
     path: /var/mnt/data/prometheus
+    type: DirectoryOrCreate
