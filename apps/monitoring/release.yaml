@@ -62,6 +62,9 @@ spec:
         datasources:
           enabled: true
           defaultDatasourceEnabled: true
+          settings:
+            datasource:
+              url: http://monitoring-kube-prometheus-stack-prometheus.monitoring.svc:9090
         dashboards:
           enabled: true
           label: grafana_dashboard
