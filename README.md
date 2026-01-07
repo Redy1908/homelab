@@ -14,9 +14,7 @@ My personal homelab built on **Talos Linux** and powered by **Kubernetes**. The 
 - **MetalLB**: Bare metal load balancer implementation.
 - **n8n**: Workflow automation tool.
 - **Cloudflared**: Cloudflare Tunnel for secure external access.
-- **Immich**: Self-hosted photo and video backup solution.
-- **PostgreSQL**: Database service for applications.
-- **Redis**: In-memory data structure store for caching.
+- **Prometheus & Grafana**: Monitoring and visualization stack. (kube-prometheus-stack)
 
 ---
 
