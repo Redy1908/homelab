@@ -6,3 +6,5 @@ resources:
   - release.yaml
   - secret.yaml
   - namespace.yaml
+  - pv.yaml
+  - pvc.yaml
