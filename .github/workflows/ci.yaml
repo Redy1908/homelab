@@ -16,6 +16,19 @@ on:
       - talos/**
       - utils/**
 jobs:
+  trivy:
+    name: Trivy Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+      - name: Trivy config scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: "config,secret"
+          severity: "HIGH,CRITICAL"
+          scan-ref: "."
+          exit-code: '1'
   yamllint:
     name: YAML Syntax Check
     runs-on: ubuntu-latest
@@ -44,25 +57,3 @@ jobs:
         with:
           entrypoint: /kubeconform
           args: -summary -output json -ignore-missing-schemas -schema-location default -schema-location https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json -verbose apps/ clusters/ utils/
-  sops-check:
-    name: SOPS Encryption Check
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
-      - name: Check for unencrypted secrets
-        run: |
-          echo "Scanning for unencrypted secrets..."
-          FAILED=0
-          grep -r "kind: Secret" apps/ clusters/ utils/ | cut -d: -f1 | sort | uniq | while read file; do
-            if ! grep -q "sops:" "$file"; then
-              echo "Found potential unencrypted secret in $file"
-              FAILED=1
-            fi
-          done
-
-          if [ "$FAILED" -eq 1 ]; then
-            exit 1
-          else
-            echo "All secrets appear to be encrypted."
-          fi
