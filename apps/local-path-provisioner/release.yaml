@@ -13,9 +13,11 @@ spec:
         kind: HelmRepository
         name: containeroo
         namespace: flux-system
+
+  targetNamespace: local-path-provisioner
   
   install:
-    createNamespace: true
+    createNamespace: false
   
   values:
     storageClass:
