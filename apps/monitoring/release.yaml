@@ -57,6 +57,13 @@ spec:
     prometheus:
       prometheusSpec:
         retention: 10d
+
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+          runAsGroup: 0
+          fsGroup: 0
+
         storageSpec:
           volumeClaimTemplate:
             spec:
