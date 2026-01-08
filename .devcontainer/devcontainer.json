@@ -11,7 +11,8 @@
       "extensions": [
         "ms-kubernetes-tools.vscode-kubernetes-tools",
         "redhat.vscode-yaml",
-        "signageos.signageos-vscode-sops"
+        "signageos.signageos-vscode-sops",
+        "google.geminicodeassist"
       ]
     }
   },
