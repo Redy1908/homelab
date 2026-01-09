@@ -37,6 +37,10 @@ data:
                 icon: pgadmin.png
                 href: https://pgadmin.redy1908homelab.com/
                 description: PostgreSQL Web Admin
+            - minio:
+                icon: minio.png
+                href: https://minio.redy1908homelab.com/
+                description: S3 Object Storage
         - Automation:
             - n8n:
                 icon: n8n.png
