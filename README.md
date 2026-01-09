@@ -15,6 +15,7 @@ My personal homelab built on **Talos Linux** and powered by **Kubernetes**. The 
 - **n8n**: Workflow automation tool.
 - **Cloudflared**: Cloudflare Tunnel for secure external access.
 - **Prometheus & Grafana**: Monitoring and visualization stack. (kube-prometheus-stack)
+- **PostgreSQL & pgAdmin**: Relational database and web-based administration tool.
 
 ---
 

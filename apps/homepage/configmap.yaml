@@ -2,93 +2,98 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: homepage-config
-  namespace: homepage
+    name: homepage-config
+    namespace: homepage
 data:
-  settings.yaml: |
-    providers:
-      openweathermap: openweathermapapikey
-      weatherapi: weatherapiapikey
-  services.yaml: |
-    - Network:
-        - Pi-hole:
-            icon: pi-hole.png
-            href: https://pihole.redy1908homelab.com/
-            description: Network-wide Ad Blocking
-        - Nginx Proxy Manager:
-            icon: nginx-proxy-manager.png
-            href: https://npm.redy1908homelab.com/
-            description: Reverse Proxy Management
-        - Tailscale:
-            icon: tailscale.png
-            href: https://tailscale.redy1908homelab.com/
-            description: VPN & Mesh Network
-        - Fritz!Box:
-            icon: fritzbox.png
-            href: http://fritzbox.redy1908homelab.com/
-            description: Router Management
-    - Monitoring:
-        - Grafana:
-            icon: grafana.png
-            href: https://grafana.redy1908homelab.com/
-            description: Metrics & Monitoring Dashboard
-    - Automation:
-        - n8n:
-            icon: n8n.png
-            href: https://n8n.redy1908homelab.com/
-            description: Workflow Automation
-    - Finance:
-        - Actual Budget:
-            icon: actual-budget.png
-            href: https://actualbudget.redy1908homelab.com/
-            description: Personal Finance
-  widgets.yaml: |
-    - resources:
-        cpu: true
-        memory: true
-        disk:
-          - /
-          - /app/config/logs
-    - search:
-        provider: google
-        target: _blank
-        hint: search
-  bookmarks.yaml: |
-    - Personal:
-        - ProtonMail:
-            - icon: proton-mail.png
-              href: https://mail.proton.me/u/0/
-        - ProtonPass:
-            - icon: proton-pass.png
-              href: https://pass.proton.me/u/0/
-        - ProtonDrive:
-            - icon: proton-drive.png
-              href: https://drive.proton.me/u/0/
-        - ProtonCalendar:
-            - icon: proton-calendar.png
-              href: https://calendar.proton.me/u/0/
-    - Developer:
-        - Github:
-            - icon: github-light.png
-              href: https://github.com/Redy1908/
-        - Infomaniak:
-            - icon: infomaniak-k.png
-              href: https://manager.infomaniak.com/
-        - Cloudflare:
-            - icon: cloudflare.png
-              href: https://dash.cloudflare.com/
-    - Various:
-        - LinkedIn:
-            - icon: linkedin.png
-              href: https://it.linkedin.com/in/pierluigi-supino
-        - YouTube:
-            - icon: youtube.png
-              href: https://youtube.com/
-        - Reddit:
-            - icon: reddit.png
-              href: https://reddit.com/
-  docker.yaml: ""
-  kubernetes.yaml: ""
-  proxmox.yaml: ""
-  custom.css: ""
-  custom.js: ""
+    settings.yaml: |
+        providers:
+          openweathermap: openweathermapapikey
+          weatherapi: weatherapiapikey
+    services.yaml: |
+        - Network:
+            - Pi-hole:
+                icon: pi-hole.png
+                href: https://pihole.redy1908homelab.com/
+                description: Network-wide Ad Blocking
+            - Nginx Proxy Manager:
+                icon: nginx-proxy-manager.png
+                href: https://npm.redy1908homelab.com/
+                description: Reverse Proxy Management
+            - Tailscale:
+                icon: tailscale.png
+                href: https://tailscale.redy1908homelab.com/
+                description: VPN & Mesh Network
+            - Fritz!Box:
+                icon: fritzbox.png
+                href: http://fritzbox.redy1908homelab.com/
+                description: Router Management
+        - Monitoring:
+            - Grafana:
+                icon: grafana.png
+                href: https://grafana.redy1908homelab.com/
+                description: Metrics & Monitoring Dashboard
+        - Data:
+            - pgAdmin:
+                icon: pgadmin.png
+                href: http://192.168.1.226/
+                description: PostgreSQL Web Admin
+        - Automation:
+            - n8n:
+                icon: n8n.png
+                href: https://n8n.redy1908homelab.com/
+                description: Workflow Automation
+        - Finance:
+            - Actual Budget:
+                icon: actual-budget.png
+                href: https://actualbudget.redy1908homelab.com/
+                description: Personal Finance
+    widgets.yaml: |
+        - resources:
+            cpu: true
+            memory: true
+            disk:
+              - /
+              - /app/config/logs
+        - search:
+            provider: google
+            target: _blank
+            hint: search
+    bookmarks.yaml: |
+        - Personal:
+            - ProtonMail:
+                - icon: proton-mail.png
+                  href: https://mail.proton.me/u/0/
+            - ProtonPass:
+                - icon: proton-pass.png
+                  href: https://pass.proton.me/u/0/
+            - ProtonDrive:
+                - icon: proton-drive.png
+                  href: https://drive.proton.me/u/0/
+            - ProtonCalendar:
+                - icon: proton-calendar.png
+                  href: https://calendar.proton.me/u/0/
+        - Developer:
+            - Github:
+                - icon: github-light.png
+                  href: https://github.com/Redy1908/
+            - Infomaniak:
+                - icon: infomaniak-k.png
+                  href: https://manager.infomaniak.com/
+            - Cloudflare:
+                - icon: cloudflare.png
+                  href: https://dash.cloudflare.com/
+        - Various:
+            - LinkedIn:
+                - icon: linkedin.png
+                  href: https://it.linkedin.com/in/pierluigi-supino
+            - YouTube:
+                - icon: youtube.png
+                  href: https://youtube.com/
+            - Reddit:
+                - icon: reddit.png
+                  href: https://reddit.com/
+    docker.yaml: ""
+    kubernetes.yaml: ""
+    proxmox.yaml: ""
+    custom.css: ""
+    custom.js: ""
