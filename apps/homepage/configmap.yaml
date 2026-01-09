@@ -35,7 +35,7 @@ data:
         - Data:
             - pgAdmin:
                 icon: pgadmin.png
-                href: http://192.168.1.226/
+                href: https://pgadmin.redy1908homelab.com/
                 description: PostgreSQL Web Admin
         - Automation:
             - n8n:
