@@ -29,6 +29,9 @@ This project is configured with a **Dev Container**. To ensure consistency, all 
 * `age`
 * `helm`
 * `yq`
+* `direnv`
+
+All the required environment variables are defined in the file `.env.example` use them in your `.env` file.
 
 ---
 
@@ -45,16 +48,6 @@ This project uses an external VPS to host **Headscale** (a self-hosted Tailscale
 3.  SSH access to the VPS.
 
 ### Configuration & Deployment
-
-Export the required environment variables:
-
-```bash
-export VPS_HOST="VPS_IP_OR_HOSTNAME"
-export VPS_USER="VPS_SSH_USERNAME"
-export DOMAIN_NAME="headscale.yourdomain.com"
-export VPS_SSH_KEY_PATH="/path/to/your/ssh/key"
-export SSH_PORT="22"
-```
 
 Run the Ansible playbook to provision the VPS:
 
@@ -125,16 +118,6 @@ sops -e -i apps/tailscale/secret.yaml
 ---
 
 ## Provisioning
-
-Export the necessary environment variables:
-
-```bash
-export GITHUB_USER="GITHUB_USERNAME"
-export GITHUB_REPO="GITHUB_REPO"
-export GITHUB_TOKEN="GITHUB_TOKEN"
-export CLUSTER_NAME="homelab"
-export NODE_IP="NODE_IP"
-```
 
 Run the playbook to initialize the cluster:
 

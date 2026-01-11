@@ -4,3 +4,6 @@ talos/config/*
 !talos/config/.gitkeep
 
 *.decrypted~*
+
+.env
+.direnv
